@@ -30,7 +30,7 @@ type (
 
 func init() {
 	pid := os.Getpid()
-	log.SetPrefix(fmt.Sprintf("[%d]: Hash Indexes: ", pid))
+	log.SetPrefix(fmt.Sprintf("[%d]: DB: ", pid))
 }
 
 func NewDB() DB {
@@ -62,7 +62,6 @@ func getIndexes() HashTable {
 	indexes := make(HashTable)
 
 	json.Unmarshal(b, &indexes)
-	log.Println(indexes)
 	if err != nil {
 		log.Fatalf("FATAL: Could not open index file, %s", err)
 	}
@@ -76,7 +75,6 @@ func (hf DB) index(key string, end int) {
 		Max: hf.byteSize + end,
 	}
 	indexes[key] = hiv
-	log.Println(indexes, "After")
 
 	fbyte, err := json.Marshal(indexes)
 	if err != nil {
@@ -93,10 +91,8 @@ func (hf DB) Write(key, value string) bool {
 		log.Printf("ERROR: Could not write to file, %s", err)
 		return false
 	}
-	log.Printf("Wrote %d bytes", nb)
 	hf.index(key, nb)
 	hf.byteSize = hf.byteSize + nb
-	log.Printf("Current byteSize: %d", hf.byteSize)
 
 	return true
 }
@@ -117,4 +113,12 @@ func (hf DB) Read(key string) string {
 	sdata := string(data)
 	splitdata := strings.Split(sdata, ":")
 	return splitdata[len(splitdata) - 1]
+}
+
+func (hf DB) FlushDB() {
+	os.Remove(INDEX_FILE)
+	log.Println("Remove Index")
+	os.Remove(DB_FILE)
+	log.Println("Remove DB logs")
+	log.Println("FLUSHED ALL")
 }

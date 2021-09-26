@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const (
+var (
 	DB_FILE = "./logs"
 	INDEX_FILE = "./index.json"
 )

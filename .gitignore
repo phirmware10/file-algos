@@ -1,2 +1,5 @@
-logs
-index.json
+/logs
+/index.json
+
+/hash-indexes/logs
+/hash-indexes/index.json
